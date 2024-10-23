@@ -37,11 +37,14 @@ namespace Utils
   MZType kron(CType alpha, 
               MZType const &a, 
               MZType const &b);
+  MZType partial_trace_rc(MZType &rho,
+                          MKL_INT keep,
+                          MKL_INT rc);
   void add(MZType &res,
+           CType &prefact,
            MZType const &a,
            MZType const &b);
   void print_mat(MZType &mat,
                  bool comp);
 }
-
 #endif
