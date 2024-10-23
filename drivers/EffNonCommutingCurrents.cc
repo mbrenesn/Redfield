@@ -52,7 +52,7 @@ double dawson_int_trap(double x)
     accum_even += std::exp(k * h * k * h);
   }
 
-  double val = std::exp(-1.0 * x * x) * ((f_b + (4.0 * accum_odd) + (2.0 * accum_even)) * h / 3.0);
+  double val = std::exp(-1.0 * x * x) * ((f_a + f_b + (4.0 * accum_odd) + (2.0 * accum_even)) * h / 3.0);
 
   return val;
 }
