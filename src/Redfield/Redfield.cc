@@ -46,7 +46,7 @@ void Redfield::construct_redfield_1r_phonon(MZType &Coh,
   // Diagonalise Ham
   eigvals.resize(ham_dim_);
   MKL_INT info = LAPACKE_zheevd(LAPACK_ROW_MAJOR, 'V', 'U', ham_dim_, &Ham[0], ham_dim_, &eigvals[0]);
-  
+
   // Rotate Vr
   CType alpha(1.0, 0.0);
   CType beta(0.0, 0.0);
@@ -135,17 +135,17 @@ void Redfield::construct_redfield_2r_phonon(MZType &Coh,
   // Diagonalise Ham
   eigvals.resize(ham_dim_);
   MKL_INT info = LAPACKE_zheevd(LAPACK_ROW_MAJOR, 'V', 'U', ham_dim_, &Ham[0], ham_dim_, &eigvals[0]);
-  
+
   // Rotate Vl
   CType alpha(1.0, 0.0);
   CType beta(0.0, 0.0);
   MZType buffer(ham_dim_ * ham_dim_, 0.0);
   cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, ham_dim_, ham_dim_, ham_dim_, &alpha, &Vl[0], ham_dim_, &Ham[0], ham_dim_, &beta, &buffer[0], ham_dim_);
-  cblas_zgemm(CblasRowMajor, CblasTrans, CblasNoTrans, ham_dim_, ham_dim_, ham_dim_, &alpha, &Ham[0], ham_dim_, &buffer[0], ham_dim_, &beta, &Vl[0], ham_dim_);
+  cblas_zgemm(CblasRowMajor, CblasConjTrans, CblasNoTrans, ham_dim_, ham_dim_, ham_dim_, &alpha, &Ham[0], ham_dim_, &buffer[0], ham_dim_, &beta, &Vl[0], ham_dim_);
   
   // Rotate Vr
   cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, ham_dim_, ham_dim_, ham_dim_, &alpha, &Vr[0], ham_dim_, &Ham[0], ham_dim_, &beta, &buffer[0], ham_dim_);
-  cblas_zgemm(CblasRowMajor, CblasTrans, CblasNoTrans, ham_dim_, ham_dim_, ham_dim_, &alpha, &Ham[0], ham_dim_, &buffer[0], ham_dim_, &beta, &Vr[0], ham_dim_);
+  cblas_zgemm(CblasRowMajor, CblasConjTrans, CblasNoTrans, ham_dim_, ham_dim_, ham_dim_, &alpha, &Ham[0], ham_dim_, &buffer[0], ham_dim_, &beta, &Vr[0], ham_dim_);
 
   // Redfield Tensor
   MKL_INT dim = ham_dim_;
@@ -335,12 +335,12 @@ MZType Redfield::get_steady_state(MZType &RTensor)
 {
   assertm(static_cast<MKL_INT>(std::sqrt(RTensor.size())) == ham_dim_ * ham_dim_, 
               "Dimension mismatch in steady state routine: Redfield tensor and Hamiltonian");
-  
+
   // \overline{W} = W + |0>><<1|
   for(MKL_INT i = 0; i < ham_dim_; ++i){
     RTensor[(i * ham_dim_) + i] += 1.0;
   }
-  
+
   // Solution vector
   MKL_INT dim = ham_dim_ * ham_dim_;
   MZType SState(dim, 0.0);
